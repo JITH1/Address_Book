@@ -3,6 +3,8 @@
 #include<string.h>
 #include<ctype.h>
 
+int ptr ;
+
 int create_contact(AddressBook *addressBook ,int Count_Max)
 {
     char phone[14] , mail[40] , name[40];
@@ -66,7 +68,7 @@ int search_contact(AddressBook *addressBook)
     printf("\nSearch Contact by  \n1.Name\n2.Phone\n3.Mail\nEnter your choice : \n");
     scanf("%d",&n);
 
-    while(!(n>0 && n<4))
+    if(!(n>0 && n<4))
     {
         printf(RED"\nInvalid Option...please enter valid option...!\nDo You wish to continue...!(Y/N) ?\n"RESET);
         char op ;
@@ -208,13 +210,13 @@ int edit_contact(AddressBook *addressBook)
 
     retry :
     printf("\nEdit by \n1.Name\n2.Phone\n3.Email\nEnter Your Option : \n");
-    scanf("%d",&n);
+    scanf(" %d",&n);
 
-    while(!(n>0 && n<4))
+    if(!(n>0 && n<4))
     {
-        printf(RED"\nInvalid Option...please enter valid option...!\nDo You wish to continue...!(Y/N) ?"RESET);
+        printf(RED"\nInvalid Option...please enter valid option...!\nDo You wish to continue...!(Y/N) ?\n"RESET);
         char op ;
-        scanf("%c",&op);
+        scanf(" %c",&op);
 
         if(op == 'Y' || op == 'y')
         {
@@ -232,7 +234,7 @@ int edit_contact(AddressBook *addressBook)
         
     }
     
-    
+    return SUCCESS ;
 
 }
 
