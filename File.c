@@ -22,6 +22,8 @@ int load_contact(AddressBook *addressBook)
 
     fclose(ptr);
 
+    // Sort Contacts
+
     return SUCCESS ;
 }
 

@@ -7,6 +7,12 @@ int create_contact(AddressBook *addressBook ,int Count_Max)
 {
     char phone[14] , mail[40] , name[40];
     int op ;
+
+    if(addressBook->ContactCount >= MAX_COUNT)
+    {
+        printf(RED"\nAddress Book Full...!\n"RESET);
+        return FAILURE ;
+    }
     
     while(!enter_name(name))
     {
@@ -51,13 +57,52 @@ int create_contact(AddressBook *addressBook ,int Count_Max)
     return SUCCESS ;
 }
 
-int edit_contact(AddressBook *addressBook)
-{ 
-    return SUCCESS ;
-}
-
-void search_contact(AddressBook *addressBook)
+int search_contact(AddressBook *addressBook)
 {
+     char buffer[40] ;
+     int n , m ;
+
+    retry :
+    printf("\nSearch Contact by  \n1.Name\n2.Phone\n3.Mail\nEnter your choice : \n");
+    scanf("%d",&n);
+
+    while(!(n>0 && n<4))
+    {
+        printf(RED"\nInvalid Option...please enter valid option...!\nDo You wish to continue...!(Y/N) ?\n"RESET);
+        char op ;
+        scanf(" %c",&op);
+
+        if(op == 'Y' || op == 'y')
+        {
+            goto retry ;
+        }
+        else if(op == 'n' || op == 'N')
+        {
+            return FAILURE ;
+        }
+        else
+        {
+            printf(RED"\nInvalid option expected (Y/N)...please try again...!\n"RESET);
+            goto retry;
+        }
+        
+    }
+    
+    
+    (n == 1) ? printf("\nEnter the Name : \n") : (n == 2) ? printf("\nEnter the phone : \n") : printf("\nEnter the mail : \n"); ;
+    (n == 1) ? scanf(" %39[^\n]",buffer) : (n == 2) ? scanf(" %39s",buffer) : scanf(" %39s",buffer) ;
+    
+     if(m = Search_match(addressBook , n , buffer))
+     {
+        printf(GREEN"\n%d Contacts Match found...!\n"RESET,m);
+     }
+     else
+     {
+        printf(RED"\nNo Match Found...!\n"RESET);
+        return FAILURE;
+     }
+
+     return SUCCESS ;
 
 }
 
@@ -149,6 +194,47 @@ int enter_name(char *name)
 
     return SUCCESS ;
 } 
+
+int edit_contact(AddressBook *addressBook)
+{
+
+    if(addressBook->ContactCount == 0)
+    {
+        printf(RED"\nContact List is Empty...!\n"RESET);
+        return FAILURE ;
+    }
+
+    int n , flag = 0; 
+
+    retry :
+    printf("\nEdit by \n1.Name\n2.Phone\n3.Email\nEnter Your Option : \n");
+    scanf("%d",&n);
+
+    while(!(n>0 && n<4))
+    {
+        printf(RED"\nInvalid Option...please enter valid option...!\nDo You wish to continue...!(Y/N) ?"RESET);
+        char op ;
+        scanf("%c",&op);
+
+        if(op == 'Y' || op == 'y')
+        {
+            goto retry ;
+        }
+        else if(op == 'n' || op == 'N')
+        {
+            return FAILURE ;
+        }
+        else
+        {
+            printf(RED"\nInvalid option expected (Y/N)...please try again...!\n"RESET);
+            goto retry;
+        }
+        
+    }
+    
+    
+
+}
 
 int enter_phone(char *phone)
 {
@@ -275,4 +361,52 @@ int duplicate(char *buff,int type,AddressBook *addressBook)
 
     return FAILURE ;
 
+}
+
+int Search_match(AddressBook *addressBook , int op , char *buffer)
+{
+    int count = 0 ;
+
+    if(op == NAME)
+    {
+        for(int i = 0 ; i<addressBook->ContactCount ; i++)
+        { 
+             if(strcmp(buffer,addressBook->Contacts[i].name) == 0)
+             {
+                  printf(YELLOW"\nS.No -> %-3d | %-20s | %-14s | %-27s |\n"RESET,i+1, addressBook->Contacts[i].name,addressBook->Contacts[i].phone ,addressBook->Contacts[i].mail );
+                  count++;
+             }   
+        }
+
+        return count ;
+
+    }
+    else if(op == PHONE)
+    {
+        for(int i = 0 ; i<addressBook->ContactCount ; i++)
+        { 
+             if(strcmp(buffer,addressBook->Contacts[i].phone) == 0)
+             {
+                printf(YELLOW"\nS.No -> %-3d | %-20s | %-14s | %-27s |\n"RESET,i+1, addressBook->Contacts[i].name,addressBook->Contacts[i].phone ,addressBook->Contacts[i].mail );
+                count++;
+             }   
+        }  
+
+        return count ;
+    }
+    else if(op == MAIL)
+    {
+        for(int i = 0 ; i<addressBook->ContactCount ; i++)
+        { 
+             if(strcmp(buffer,addressBook->Contacts[i].mail) == 0)
+             {
+                printf(YELLOW"\nS.No -> %-3d | %-20s | %-14s | %-27s |\n"RESET,i+1, addressBook->Contacts[i].name,addressBook->Contacts[i].phone ,addressBook->Contacts[i].mail );
+                count++;
+             }   
+        }
+
+        return count ;
+    }
+
+    return 0 ; 
 }

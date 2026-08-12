@@ -8,8 +8,10 @@
 
 #define MAX_COUNT 100
 
-#define MAIL 1
+#define NAME  1
 #define PHONE 2 
+#define MAIL  3
+
 
 typedef struct 
 {
@@ -33,7 +35,7 @@ enum flag
 /* Main Functions */
 int create_contact(AddressBook *addressBook ,int Count_Max);
 int edit_contact(AddressBook *addressBook);
-void search_contact(AddressBook *addressBook);
+int search_contact(AddressBook *addressBook);
 void view_contact(AddressBook *addressBook);
 int delete_contact(AddressBook *addressBook);
 
@@ -42,6 +44,7 @@ int enter_phone(char *phone);
 int enter_mail(char *mail);
 int enter_name(char *name);
 int duplicate(char *buff,int type,AddressBook *addressBook);
+int Search_match(AddressBook *addressBook , int op , char *buffer);
 
 #endif
 

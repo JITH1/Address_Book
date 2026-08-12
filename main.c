@@ -39,9 +39,25 @@ int main()
          break;
 
          case 2 :
+         if(edit_contact(&addressBook))
+         {
+            printf(GREEN"\nContact Edited Successfully...!\n"RESET);
+         }
+         else
+         {
+            printf(RED"\nUnable to edit contact...!\n"RESET);
+         }
          break;
 
          case 3 :
+         if(search_contact(&addressBook))
+         {
+            printf(GREEN"Search Successfull...!\n"RESET);
+         }
+         else
+         {
+            printf(RED"Search Failed...!\n"RESET);
+         }
          break;
 
          case 4 :
