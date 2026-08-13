@@ -1,9 +1,12 @@
 #include<stdio.h>
 #include"File_handler.h"
 #include<string.h>
+#include<stdlib.h>
 #include<ctype.h>
 
-int ptr ;
+int *ptr ;
+int size ;
+int set ;
 
 int create_contact(AddressBook *addressBook ,int Count_Max)
 {
@@ -61,8 +64,14 @@ int create_contact(AddressBook *addressBook ,int Count_Max)
 
 int search_contact(AddressBook *addressBook)
 {
-     char buffer[40] ;
-     int n , m ;
+     if(addressBook->ContactCount == 0)
+     {
+         printf(RED"\nContact List Empty...!\n");
+         return FAILURE ;
+     }
+
+    char buffer[40] ;
+    int n , m ;
 
     retry :
     printf("\nSearch Contact by  \n1.Name\n2.Phone\n3.Mail\nEnter your choice : \n");
@@ -103,7 +112,7 @@ int search_contact(AddressBook *addressBook)
         printf(RED"\nNo Match Found...!\n"RESET);
         return FAILURE;
      }
-
+     
      return SUCCESS ;
 
 }
@@ -206,9 +215,39 @@ int edit_contact(AddressBook *addressBook)
         return FAILURE ;
     }
 
-    int n , flag = 0; 
+    int n , m , flag = 0 ; 
+    char buffer[40];
 
-    retry :
+    ptr = malloc(sizeof(int)*addressBook->ContactCount);
+    set = 1 ;
+    size = 0 ;
+
+    if(!(m = search_contact(addressBook)))
+    {
+        printf(RED"\nNo Contact Match Found...!\n"RESET);
+        return FAILURE ;
+    }
+
+    printf("\nEnter the S.No to edit : \n");
+    scanf("%d",&m);
+    
+    for(int i = 0 ; i<size ; i++)
+    {
+        if(m == ptr[i])
+        flag++;
+    }
+
+    if(!flag)
+    {
+        printf(RED"\nInvalid S.No Of Matched Contect Entered...!\n"RESET);
+        return FAILURE ;
+    }
+    
+    free(ptr);
+    set = 0 ;
+    size = 0 ;
+
+    Again :
     printf("\nEdit by \n1.Name\n2.Phone\n3.Email\nEnter Your Option : \n");
     scanf(" %d",&n);
 
@@ -220,7 +259,7 @@ int edit_contact(AddressBook *addressBook)
 
         if(op == 'Y' || op == 'y')
         {
-            goto retry ;
+            goto Again ;
         }
         else if(op == 'n' || op == 'N')
         {
@@ -229,11 +268,48 @@ int edit_contact(AddressBook *addressBook)
         else
         {
             printf(RED"\nInvalid option expected (Y/N)...please try again...!\n"RESET);
-            goto retry;
+            goto Again;
         }
         
     }
-    
+
+    if(n == 1)
+    {
+        if(enter_name(buffer))
+        {
+            strcpy(addressBook->Contacts[m-1].name,buffer);
+        }
+        else
+        {
+            printf(RED"\nInvalid Name...!\n"RESET);
+            return FAILURE ;
+        }
+    }
+    else if(n == 2)
+    {
+        if(enter_phone(buffer) && (!duplicate(buffer,PHONE,addressBook)))
+        {
+            strcpy(addressBook->Contacts[m-1].phone,buffer);
+        }
+        else
+        {
+            printf(RED"\nInvalid Phone format / Duplicate phone...!\n"RESET);
+            return FAILURE ;
+        }
+    }
+    else if(n == 3)
+    {
+        if(enter_mail(buffer) && (!duplicate(buffer,MAIL,addressBook)))
+        {
+            strcpy(addressBook->Contacts[m-1].mail,buffer);
+        }
+        else
+        {
+            printf(RED"\nInvalid mail format / Duplicate mail...!\n"RESET);
+            return FAILURE ;
+        }
+    }
+
     return SUCCESS ;
 
 }
@@ -368,7 +444,7 @@ int duplicate(char *buff,int type,AddressBook *addressBook)
 int Search_match(AddressBook *addressBook , int op , char *buffer)
 {
     int count = 0 ;
-
+   
     if(op == NAME)
     {
         for(int i = 0 ; i<addressBook->ContactCount ; i++)
@@ -377,6 +453,9 @@ int Search_match(AddressBook *addressBook , int op , char *buffer)
              {
                   printf(YELLOW"\nS.No -> %-3d | %-20s | %-14s | %-27s |\n"RESET,i+1, addressBook->Contacts[i].name,addressBook->Contacts[i].phone ,addressBook->Contacts[i].mail );
                   count++;
+
+                  if(set)
+                    ptr[size++] = i+1;
              }   
         }
 
@@ -391,6 +470,9 @@ int Search_match(AddressBook *addressBook , int op , char *buffer)
              {
                 printf(YELLOW"\nS.No -> %-3d | %-20s | %-14s | %-27s |\n"RESET,i+1, addressBook->Contacts[i].name,addressBook->Contacts[i].phone ,addressBook->Contacts[i].mail );
                 count++;
+
+                if(set)
+                  ptr[size++] = i+1;
              }   
         }  
 
@@ -404,6 +486,9 @@ int Search_match(AddressBook *addressBook , int op , char *buffer)
              {
                 printf(YELLOW"\nS.No -> %-3d | %-20s | %-14s | %-27s |\n"RESET,i+1, addressBook->Contacts[i].name,addressBook->Contacts[i].phone ,addressBook->Contacts[i].mail );
                 count++;
+
+                if(set)
+                  ptr[size++] = i+1;
              }   
         }
 
