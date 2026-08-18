@@ -10,6 +10,12 @@ int set ;
 
 int create_contact(AddressBook *addressBook ,int Count_Max)
 {
+    if(addressBook->ContactCount >= Count_Max)
+    {
+        printf(RED"\nContact Library Full...!\n"RESET);
+        return FAILURE ;
+    }
+
     char phone[14] , mail[40] , name[40];
     int op ;
 
@@ -105,7 +111,7 @@ int search_contact(AddressBook *addressBook)
     (n == 1) ? printf("\nEnter the Name : \n") : (n == 2) ? printf("\nEnter the phone : \n") : printf("\nEnter the mail : \n"); ;
     (n == 1) ? scanf(" %39[^\n]",buffer) : (n == 2) ? scanf(" %39s",buffer) : scanf(" %39s",buffer) ;
     
-     if(m = Search_match(addressBook , n , buffer))
+     if((m = Search_match(addressBook , n , buffer)))
      {
         printf(GREEN"\n%d Contacts Match found...!\n"RESET,m);
      }
