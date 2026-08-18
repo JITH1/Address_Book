@@ -46,5 +46,9 @@ int enter_name(char *name);
 int duplicate(char *buff,int type,AddressBook *addressBook);
 int Search_match(AddressBook *addressBook , int op , char *buffer);
 
+/* Sort Contact*/
+void sort_contact(AddressBook *addressBook);
+
+
 #endif
 

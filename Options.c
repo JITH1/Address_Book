@@ -59,6 +59,8 @@ int create_contact(AddressBook *addressBook ,int Count_Max)
 
     addressBook->ContactCount++; 
 
+    sort_contact(addressBook);
+
     return SUCCESS ;
 }
 
@@ -496,4 +498,28 @@ int Search_match(AddressBook *addressBook , int op , char *buffer)
     }
 
     return 0 ; 
+}
+
+void sort_contact(AddressBook *addressBook)
+{
+
+    for(int i = 0 ; i<addressBook->ContactCount - 1 ; i++)
+    {
+        int alph_order = i ;
+
+        for(int j = i+1 ; j<addressBook->ContactCount ; j++)
+        {
+            if(addressBook->Contacts[j].name[0] < addressBook->Contacts[alph_order].name[0])
+            {
+                alph_order = j ;
+            }
+        }
+
+        char buffer[40];
+
+        strcpy(buffer,addressBook->Contacts[alph_order].name);
+        strcpy(addressBook->Contacts[alph_order].name,addressBook->Contacts[i].name);
+        strcpy(addressBook->Contacts[i].name,buffer);
+    }
+    
 }
