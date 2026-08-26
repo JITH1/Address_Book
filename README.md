@@ -27,13 +27,16 @@ This project implements a full-featured address book application with create, ed
 
 ## 🔧 Core Techniques Highlighted
 
-- 📦 **Modular design** — clean separation across data model, file I/O, and business logic layers
-- 🧱 **Struct-based data modeling** — `Contact` and `AddressBook` structures with a fixed-capacity contact array
-- 📂 **File I/O with `fscanf`/`fprintf`** for structured CSV persistence
-- 🧵 **String handling** — safe fixed-width buffers with `strcpy`/`strcmp`/`strlen` and format-driven `scanf` parsing
-- 🔠 **Character-classification validation** using `<ctype.h>` (`isalpha`, `isdigit`, `isupper`, `isalnum`)
-- 🧭 **State-tracking edit/search flow** — reusable search results feed into the edit path for a smooth create → find → modify pipeline
-- ⚙️ **Enum-based status codes** (`SUCCESS`/`FAILURE`) for consistent function return handling across modules
+- 📦 **Modular architecture** — data model, persistence layer, and business logic are split across separate translation units (`Contact.h`, `File.c`, `Options.c`), each compiled independently and linked via header contracts
+- 🧱 **Struct-based data modeling** — `Contact` records are packed into a fixed-size array inside `AddressBook`, giving O(1) indexed access and predictable, contiguous memory layout with no per-record heap allocation
+- 🔀 **In-place array compaction on delete** — removing a contact shifts every subsequent struct in the array one position backward in memory to close the gap, preserving contiguity without ever resizing or reallocating the underlying array
+- 🔃 **In-place sorting via field-wise memory swaps** — the contact list is reordered by repeatedly scanning for the correct next entry and swapping name fields directly in memory through a temporary buffer, avoiding any auxiliary array or extra struct copies
+- 🧠 **Dynamic memory allocation for transient state** — `malloc`/`free` is used to allocate a scratch array sized to the current contact count, used to track matched search-result indices only for the duration of the edit workflow, then explicitly freed
+- 📂 **Structured binary-adjacent file I/O** — `fscanf`/`fprintf` read and write struct fields directly against a CSV layout, mapping file bytes to struct members field-by-field rather than parsing free-form text
+- 🧵 **Fixed-width buffer string handling** — all string fields are bounded fixed-size char arrays; every `scanf`/`strcpy` call is width-limited (e.g. `%39[^\n]`) to prevent buffer overrun into adjacent struct memory
+- 🔠 **Byte-level character classification** — validation walks each input buffer one byte at a time using `<ctype.h>` predicates (`isalpha`, `isdigit`, `isupper`, `isalnum`) to enforce format rules without any string-matching or regex
+- 🧭 **State-carrying search → edit pipeline** — a shared match-index buffer produced during search is reused by the edit path, letting a multi-step user flow operate on the same in-memory result set instead of re-scanning
+- ⚙️ **Enum-driven control flow** — `SUCCESS`/`FAILURE` return codes propagate through every layer, giving a single consistent contract for error handling across the entire call chain
 
 ---
 
